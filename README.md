@@ -1,2 +1,8 @@
-# ScraperBike
-Scrapes OWA Calendar and publishes an .ics file with its contents, uses Node Phantom Nightmare &amp; iCal-Generator
+install:
+
+heroku config:add BUILDPACK_URL=https://github.com/ddollar/heroku-buildpack-multi.git
+
+//?heroku config:set PATH="/usr/local/bin:/usr/bin:/bin:/app/vendor/phantomjs/bin"
+
+
+

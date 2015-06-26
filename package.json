@@ -1,0 +1,13 @@
+{
+  "name": "scraperbike",
+  "version": "1.0.0",
+  "description": "Scrapes OWA Calendar and publishes an ics file with its contents",
+  "main": "index.js",
+  "author": "thisispete",
+  "dependencies": {
+    "express": "^4.13.0",
+    "ical-generator": "^0.2.2",
+    "nconf": "^0.7.1",
+    "nightmare": "^1.8.2"
+  }
+}
