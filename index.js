@@ -1,90 +1,159 @@
 #!/usr/bin/env node
 
-var express = require('express');
-var app = express();
+var async = require('async');
 var config = require('nconf');
-var phantom= require('node-phantom');
-
+var debug = require('debug')('scraperbike');
+var express = require('express');
+var moment = require('moment');
+var Pageload = require('./util/pageload.js');
+var phantom = require('node-phantom');
 
 config.file({ file: 'config.json' }).env().argv();
 
-var DEFAULTS = {
-  'ignore-ssl-errors': 'yes',
-  'load-images': 'no',
-  'web-security': 'yes',
-  'ssl-protocol': 'any',
-  'phantomPath': require('phantomjs').path
+var app = express();
+var ph, page, pageload;
+
+var phantomConfig = {
+    'ignore-ssl-errors': 'yes',
+    'load-images': 'yes',
+    'web-security': 'yes',
+    'ssl-protocol': 'any',
+    'phantomPath': require('phantomjs').path
 };
 
 
-phantom.create(function(err,ph) {
-  return ph.createPage(function(err,page) {
-    console.log('created page');
-    return page.open(config.get('url'), function(err,status) {
-      console.log("opened site? ", status);
-      page.includeJs('http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function(err) {
-        //jQuery Loaded.
-        //Wait for a bit for AJAX content to load on the page. Here, we are waiting 5 seconds.
-        setTimeout(function() {
-          return page.evaluate(function() {
-          //Get what you want from the page using jQuery. A good way is to populate an object with all the jQuery commands that you need and then return the object.
-            return $(window);
-          }, function(err,result) {
+var scrapeDay = function(id, callback) {
+    async.waterfall([
+        function(next) {
+            debug('injeting jquery');
+            page.includeJs(config.get('jQueryAddress'), next);
+        },
+        function(next){
+            debug('scraping page events');
+            page.evaluate( function() {
+                $.urlParam = function(name) {
+                    var results = new RegExp('[\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+                    return results ? results[1] || '' : '';
+                };
+
+                var events = [];
+                var y = $.urlParam('yr');
+                var m = $.urlParam('mn');
+                var d = $.urlParam('dy');
+
+                $.each($('table.cdayvw tr table tr h1 a'), function(i, e){
+                    var elem = $(e);
+                    var details = elem.parent().parent().html().split('<br>').pop();
+                    var start = elem.attr('title').split(' - ').shift();
+                    var end = elem.attr('title').split(' - ')[1].split(' ,').shift();
+
+                    events.push({
+                        startDate: m + '-' + d + '-' + y + ' ' + start,
+                        endDate: m + '-' + d + '-' + y + ' ' + end,
+                        title: elem.html(),
+                        location: details.split('; ').shift(),
+                        organizer: details.split('; ').pop()
+                    });
+                });
+                $('a[title="Next Day"]').click();
+
+                return events;
+            }, function(err, result){
             console.log(result);
-            ph.exit();
-          });
-        }, 500);
-      });
-    });
-  });
-}, DEFAULTS);
+                next(null, result);
+            }); //--> result
+        },
+        function(result, next) {
+            pageload.afterNextPageLoad(function(){
+                next(null, result);
+            });
+        }
+    ], callback);
 
 
 
+};
 
 
+async.waterfall([
+    function(callback) {
+        debug('creating phantom');
+        phantom.create(callback, phantomConfig); //--> err, ph
+    },
+    function(_ph, callback){
+        ph = _ph;
+        debug('creating page');
+        ph.createPage(callback); //--> err, page
+    },
+    function(_page, callback){
+        page = _page;
+        pageload = new Pageload(_page);
+        debug('setting user agent');
+        //? why Mozilla/5.0 (Macintosh; Intel Mac OS X) AppleWebKit/534.34 (KHTML, like Gecko) PhantomJS/1.9.0 (development) Safari/534.34
+        page.set('settings.userAgent', config.get('userAgent'), callback);
+    },
+    function(callback) {
+        debug('setting viewport');
+        page.setViewport({width:1200, height: 900}, callback);
+    },
+    function(callback) {
+        debug('loading OWA');
+        page.open(config.get('url'), callback); //--> status
+    },
+    function(status, callback) {
+        debug('injeting jquery');
+        page.includeJs(config.get('jQueryAddress'), callback);
+    },
+    function(callback){
+        debug('logging in');
+        page.evaluate( function(username, password) {
+            $('input[name="username"]').val(username);
+            $('input[name="password"]').val(password);
+            $('.signinbutton').click();
+            return;
+        }, callback, config.get('username'), config.get('password')); //--> result
+    },
+    function(result, callback) {
+        pageload.afterNextPageLoad(callback);
+    },
+    function(callback) {
+        debug('injeting jquery');
+        page.includeJs(config.get('jQueryAddress'), callback);
+    },
+    function(callback) {
+        debug('loading calendar view');
+        page.evaluate( function(){
+            $('#lnkNavCal').click();
+            return;
+        // onClkPN(1);
+        }, callback); //--> result
+    },
+    function(result, callback) {
+        pageload.afterNextPageLoad(callback);
+    },
+    function(callback) {
+        // cycle through next # days, each one grab event days, times, titles and locations for the calendar
+        async.timesSeries(config.get('days'), function(i, next){
+            scrapeDay(i, function(err, result){
+                next(err, result);
+            });
+        }, callback);
+    }
+    // function(callback) {
+    //     debug('taking screenshot');
+    //     page.render('img.png', callback);
+    // }
 
 
+], function (err, result) {
+    console.log('completed', result);
+    ph.exit();
+});
 
 
+//'YYYY-MM-DD HH:mm A'
 
-
-// nightmare sadness
-
-// var opts = {
-//     loadImages: false,
-//     sslProtocol: 'sslv2'
-// };
-
-// new Nightmare(opts)
-//     .viewport(1024, 768)
-//     .goto(config.get('url'))
-//     .type('input[name="username"]', config.get('username'))
-//     .type('input[name="password"]', config.get('password'))
-//     .click('.signinbutton')
-//     .wait()
-//     // .inject('js', 'libs/jquery.min.js')
-//     // .run(function (err, nightmare){
-//         // nightmare.page.includeJs('https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js');
-//         // console.log($);
-//         // nightmare.page.evaluate(function() {
-//         //     console.log($);
-//         // });
-
-//         // jQuery('.o365buttonLabel:contains(Calendar):first').parent().click();
-//         // nightmare.wait()
-//         .screenshot('img.png')
-//         .run(function (err, nightmare) {
-//             if (err) return console.log(err);
-//             console.log('Done!');
-//         });
-//     // });
-
-
-
-
-
-
+//$('a[title="Next Day"]').click();
 
 // var port = process.env.PORT || 5000;
 
