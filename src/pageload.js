@@ -1,5 +1,5 @@
-
-//borrowed / inspired / modified from nightmare.js
+//inspired partly from nightmare.js but made async for node-phantom
+//supports nopde-phantom page loads to report back that a page has unloaded then loaded
 
 var debug = require('debug')('pageload');
 
@@ -43,7 +43,6 @@ Pageload.prototype.afterNextPageLoad = function(callback) {
     self.page.evaluate(function () {
       return document.readyState;
     }, function (err, result) {
-      // debug('1', result);
       next(result !== "complete");
     });
   };
@@ -51,11 +50,11 @@ Pageload.prototype.afterNextPageLoad = function(callback) {
     self.page.evaluate(function () {
       return document.readyState;
     }, function (err, result) {
-      // debug(result);
       next(result === "complete");
     });
   };
-  this.until(isUnloaded, 8000, 50, function() {
+  this.until(isUnloaded, 1200, 50, function() {
+    //assume if we haven't unloaded within this time we weren't listening soon enough
     debug('detected page unload');
     self.until(isLoaded, 8000, 50, function() {
       debug('detected page load');

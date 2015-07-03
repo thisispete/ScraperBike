@@ -1,6 +1,7 @@
 {
   "url": "https://mail.publicisgroupe.net/owa/",
   "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/601.1.35 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/601.1.35",
-  "jQueryAddress": "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js",
-  "days": 3
+  "jQueryAddress": "http://code.jquery.com/jquery-latest.min.js",
+  "days": 20,
+  "publishTitle": "nurun"
 }
