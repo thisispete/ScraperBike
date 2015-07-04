@@ -1,11 +1,20 @@
 #Scraperbike
 
-OWA be **hella retarded**, this shit here will gost-ride the motherfucking cloud, go 18 dummy in your busted-ass ride! For real.
+Enterprise OWA be **hella retarded**, this shit here will gost-ride the motherf*cking cloud, go 18 dummy in your busted-a$$ ride! For real.
 
 (Scrapes your OWA Calendar and publishes an ics file that you can subscribe to via your favorite calendar app.)
 
 
 ##That Go
+
+###Installation
+
+- create a new heroku app
+- follow the instructions to git push your files to heroku
+- do all the following config using your credentials / config settings / etc
+- subscribe to your new calendar at http://[yourappname].herokuapp.com/calendar
+
+### Config
 
 edit the **config.json** with *username, password, url*
 
@@ -31,7 +40,7 @@ heroku config:set url = [your owa url]
 2. Node environment variables
 3. Command-line arguments
 
-###Configure Timezone
+#### Timezone
 
 https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
@@ -43,15 +52,9 @@ edit the **config.json** timezone
 heroku config:set timezone = [your timezone string in quotes]
 ```
 
-###Also in **config.json**
+####Also in **config.json**
 
 - days = number of days starting today to scrape forward
 - publishTitle = title that appears on calendar once you subscribe
 
-###Installation
-
-- create a new heroku app
-- follow the instructions to git push your files to heroku
-- do all the config above using your credentials / config settings / etc
-- subscribe to your new calendar at http://[yourappname].herokuapp.com/calendar
 
