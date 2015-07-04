@@ -11,6 +11,8 @@ later.date.localTime();
 var sched = later.parse.recur().every(20).minute().after(8).hour().before(19).hour().onWeekday();
 later.setInterval(scraperbike.fire, sched);
 
+scraperbike.fire();
+
 app.get("/calendar", function(req, res){
   res.header('Content-Type', 'text/calendar; charset=utf-8');
   res.attachment('calendar.ics')
@@ -22,7 +24,7 @@ app.listen(port);
 
 
 
-// scraperbike.fire();
+
 
 // scraperbike.write([{
 //     endDate: '7-15-2015 4:00 PM',

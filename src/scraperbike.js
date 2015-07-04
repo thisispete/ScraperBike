@@ -191,10 +191,7 @@ exports.write = function(events){
             location: e.location
         });
         var m = moment(e.startDate, mask)
-        console.log(m.toDate(), m.hour, m.minues, m.date);
     });
-
-
     cal.save('calendar.ics');
 
 };
