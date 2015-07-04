@@ -172,7 +172,8 @@ exports.write = function(events){
     var cal = ical({
         domain: require('os').hostname(),
         prodId: '//thisispete.com//Scraperbike//EN',
-        name: config.get('publishTitle')
+        name: config.get('publishTitle'),
+        timezone: 'America/Los_Angeles'
     });
     var mask = 'MM-DD-YYYY HH:mm A'
     events.forEach(function(e, i){
