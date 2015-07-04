@@ -172,12 +172,8 @@ exports.write = function(events){
     var cal = ical({
         domain: require('os').hostname(),
         prodId: '//thisispete.com//Scraperbike//EN',
-        name: config.get('publishTitle'),
-        timezone: 'America/Los_Angeles',
-        method: 'PUBLISH'
-
+        name: config.get('publishTitle')
     });
-    //7-8-2015 6:00 PM
     var mask = 'MM-DD-YYYY HH:mm A'
     events.forEach(function(e, i){
         cal.createEvent({
@@ -187,6 +183,7 @@ exports.write = function(events){
             location: e.location
         });
         var m = moment(e.startDate, mask)
+        // console.log(moment(e.startDate, mask).toDate())
     });
     cal.save('calendar.ics');
 
