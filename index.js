@@ -15,8 +15,7 @@ scraperbike.fire();
 
 app.get("/calendar", function(req, res){
   res.header('Content-Type', 'text/calendar; charset=utf-8');
-  res.attachment('calendar.ics')
-  res.end();
+  res.sendFile(__dirname + '/calendar.ics');
 });
 
 var port = process.env.PORT || 5000;

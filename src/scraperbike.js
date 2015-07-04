@@ -132,13 +132,11 @@ exports.scrapeDay = function(id, callback) {
                     var start = elem.attr('title').split(' - ').shift();
                     var end = elem.attr('title').split(' - ')[1].split(' ,').shift();
                     var location = "";
-                    var organizer = "";
                     if(details.match(';') !== null){
                         if(details.split('; ')[0].length == 0){
                             location = details.split('; ').pop();
                         }else{
                             location = details.split('; ').shift();
-                            organizer = details.split('; ').pop();
                         }
                     }
 
@@ -146,8 +144,7 @@ exports.scrapeDay = function(id, callback) {
                         startDate: m + '-' + d + '-' + y + ' ' + start,
                         endDate: m + '-' + d + '-' + y + ' ' + end,
                         title: elem.html(),
-                        location: location,
-                        organizer: organizer
+                        location: location
                     });
                 });
                 if(!lastIteration){
@@ -186,8 +183,7 @@ exports.write = function(events){
         cal.createEvent({
             start: moment(e.startDate, mask).toDate(),
             end: moment(e.endDate, mask).toDate(),
-            summary: e.organizer == '' ? '' : 'from: ' + e.organizer,
-            description: e.title,
+            summary: e.title,
             location: e.location
         });
         var m = moment(e.startDate, mask)
