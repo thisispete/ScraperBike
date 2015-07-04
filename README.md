@@ -45,8 +45,8 @@ heroku config:set timezone = [your timezone string in quotes]
 
 ###Also in **config.json**
 
-days = number of days starting today to scrape forward
-publishTitle = title that appears on calendar once you subscribe
+- days = number of days starting today to scrape forward
+- publishTitle = title that appears on calendar once you subscribe
 
 ###Installation
 
