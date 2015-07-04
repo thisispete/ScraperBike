@@ -173,7 +173,7 @@ exports.write = function(events){
         domain: require('os').hostname(),
         prodId: '//thisispete.com//Scraperbike//EN',
         name: config.get('publishTitle'),
-        timezone: 'America/Los_Angeles'
+        timezone: config.get('timezone')
     });
     var mask = 'MM-DD-YYYY HH:mm A'
     events.forEach(function(e, i){

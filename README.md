@@ -30,3 +30,28 @@ heroku config:set url = [your owa url]
 1. config.json
 2. Node environment variables
 3. Command-line arguments
+
+###Configure Timezone
+
+https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+edit the **config.json** timezone
+
+*and*
+
+```bash
+heroku config:set timezone = [your timezone string in quotes]
+```
+
+###Also in **config.json**
+
+days = number of days starting today to scrape forward
+publishTitle = title that appears on calendar once you subscribe
+
+###Installation
+
+- create a new heroku app
+- follow the instructions to git push your files to heroku
+- do all the config above using your credentials / config settings / etc
+- subscribe to your new calendar at http://[yourappname].herokuapp.com/calendar
+
