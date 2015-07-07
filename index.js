@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var basicAuth = require('basic-auth-connect');
 var config = require('nconf');
 var express = require('express');
 var later = require('later');
