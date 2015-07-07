@@ -16,7 +16,7 @@ later.setInterval(scraperbike.fire, sched);
 scraperbike.fire();
 
 var app = express();
-app.use(express.basicAuth(function(u, p) {
+app.use(basicAuth(function(u, p) {
  return u === config.get('username') && p === config.get('pasword');
 }));
 
