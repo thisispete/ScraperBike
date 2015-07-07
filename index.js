@@ -18,8 +18,6 @@ later.setInterval(scraperbike.fire, sched);
 var basic = auth.basic({
         realm: config.get('publishTitle')
     }, function (username, password, callback) {
-        console.log(username, password);
-        console.log(config.get('username'), config.get('password'));
         callback(username === config.get('username') && password === config.get('password'));
     }
 );
