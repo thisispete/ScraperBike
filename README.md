@@ -12,7 +12,7 @@ Enterprise OWA be **hella retarded**, this shit here will gost-ride the motherf*
 - create a new heroku app
 - follow the instructions to git push your files to heroku
 - do all the following config using your credentials / config settings / etc
-- subscribe to your new calendar at http://[yourappname].herokuapp.com/calendar
+- subscribe to your new calendar at http://[yourappname].herokuapp.com/calendar, use the same username and password for the HTTP basic auth
 
 ### Config
 
