@@ -71,8 +71,17 @@ exports.fire = function() {
             page.evaluate( function(){
                 $('#lnkNavCal').click();
                 return;
-            // onClkPN(1);
             }, callback); //--> result
+        },
+        function(result, callback) {
+            pageload.afterNextPageLoad(callback);
+        },
+        function(callback) {
+            debug('clicking "today" - to get the right url params');
+            page.evaluate( function(){
+                onClkTb('today');
+                return;
+            }, callback);
         },
         function(result, callback) {
             pageload.afterNextPageLoad(callback);
